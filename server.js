@@ -1,32 +1,27 @@
-const data = require('ttn').data;
-const application = require('ttn').application
+'use strict'
 
-const appID = "prueba-nueve"
-const accessKey = "NNSXS.4TXTLG2ENYMAQJYQSQWHCKLECRZZUZVLME2T4WA.NKHNWPOTSR625LOJS2EOJX4OSBXKSR5WUVTL2NKNDLVGQMJKPAVA"
+const express = require('express');
+const bodyParser = require('body-parser')
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
+
+app.get("/webhook", (req, res) => {
+    res.send("Bienvenido a mi webhook");
+})
 
 
-// discover handler and open mqtt connection
-data(appID, accessKey)
-    .then(function (client) {
-        client.on("uplink", function (devID, payload) {
-            console.log("Received uplink from ", devID)
-            console.log(payload)
-        })
-    })
-    .catch(function (err) {
-        console.error(err)
-        process.exit(1)
-    })
+app.listen(port, () => {
+    console.log('Servicio corriendo en el puerto ' + port);
+})
 
-// discover handler and open application manager client
-application(appID, accessKey)
-    .then(function (client) {
-        return client.get()
-    })
-    .then(function (app) {
-        console.log("Got app", app)
-    })
-    .catch(function (err) {
-        console.error(err)
-        process.exit(1)
-    })
+app.post("/webhook", (req, res) => {
+    var data = req.body;
+    console.log("Inicio del Json recibido");
+    console.log(data)
+    console.log("Fin del Json recibido");
+    res.sendStatus(200)
+})
